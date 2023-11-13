@@ -224,7 +224,7 @@ X_test5 <-
 
 Below, we train 4 new regression models based on the 4 versions of training and test data created in the previous step.
 
-```{r tesT_reggression, message = FALSE}
+```{r test_reggression, message = FALSE}
 train_data2 <-
   tibble(X1 = X_train2[, 1], X2 = X_train2[, 2], y = y_train)
 train_data3 <-
@@ -301,3 +301,196 @@ y_pred_test5 <- predict(regr5_fit, new_data = new_test_data5)
 ```
 
 For post-processing, we compute both the training and test errors of the models. We can also show the resulting model and the sum of the absolute weights of the regression coefficients, i.e., $\sum_{j=0}^d |w_j|$, where $d$ is the number of predictor attributes.
+
+```{r coef_functions, message=FALSE}
+get_coef <- function(model) {
+  coef <- coefficients(model$fit)
+  coef
+}
+
+calculate_rmse <- function(actual, predicted) {
+  rmse <- sqrt(mean((actual - predicted) ^ 2))
+  rmse
+}
+```
+
+```{r results_regression, message=FALSE}
+results <- tibble(
+  Model = c(
+    sprintf("%.2f X + %.2f", get_coef(regr2_fit)['X1'], get_coef(regr2_fit)['(Intercept)']),
+    sprintf(
+      "%.2f X + %.2f X2 + %.2f",
+      get_coef(regr3_fit)['X1'],
+      get_coef(regr3_fit)['X2'],
+      get_coef(regr3_fit)['(Intercept)']
+    ),
+    sprintf(
+      "%.2f X + %.2f X2 + %.2f X3 + %.2f",
+      get_coef(regr4_fit)['X1'],
+      get_coef(regr4_fit)['X2'],
+      get_coef(regr4_fit)['X3'],
+      get_coef(regr4_fit)['(Intercept)']
+    ),
+    sprintf(
+      "%.2f X + %.2f X2 + %.2f X3 + %.2f X4 + %.2f",
+      get_coef(regr5_fit)['X1'],
+      get_coef(regr5_fit)['X2'],
+      get_coef(regr5_fit)['X3'],
+      get_coef(regr5_fit)['X4'],
+      get_coef(regr5_fit)['(Intercept)']
+    )
+  ),
+  
+  Train_error = c(
+    calculate_rmse(y_train, y_pred_train2$.pred),
+    calculate_rmse(y_train, y_pred_train3$.pred),
+    calculate_rmse(y_train, y_pred_train4$.pred),
+    calculate_rmse(y_train, y_pred_train5$.pred)
+  ),
+  
+  Test_error = c(
+    calculate_rmse(y_test, y_pred_test2$.pred),
+    calculate_rmse(y_test, y_pred_test3$.pred),
+    calculate_rmse(y_test, y_pred_test4$.pred),
+    calculate_rmse(y_test, y_pred_test5$.pred)
+  ),
+  
+  Sum_of_Absolute_Weights = c(sum(abs(
+    get_coef(regr2_fit)
+  )),
+  sum(abs(
+    get_coef(regr3_fit)
+  )),
+  sum(abs(
+    get_coef(regr4_fit)
+  )),
+  sum(abs(
+    get_coef(regr5_fit)
+  )))
+)
+```
+
+```{r plot_results_regr, message=FALSE}
+ggplot(results, aes(x = Sum_of_Absolute_Weights)) +
+  geom_line(aes(y = Train_error, color = "Train error"), linetype = "solid") +
+  geom_line(aes(y = Test_error, color = "Test error"), linetype = "dashed") +
+  labs(x = "Sum of Absolute Weights", y = "Error rate") +
+  theme_minimal()
+
+results
+```
+
+## **Ridge Regression**
+
+```{r ridge_regression, message=FALSE}
+train_data <- tibble(y = y_train, X_train5)
+test_data <- tibble(y = y_test, X_test5)
+
+ridge_spec <- linear_reg(penalty = 0.4, mixture = 1) %>%
+  set_engine("glmnet")
+
+ridge_fit <- ridge_spec %>%
+  fit(y ~ ., data = train_data)
+
+y_pred_train_ridge <-
+  predict(ridge_fit, new_data = train_data)$.pred
+y_pred_test_ridge <- predict(ridge_fit, new_data = test_data)$.pred
+
+y_pred_train_ridge <-
+  predict(ridge_fit, new_data = train_data)$.pred
+y_pred_test_ridge <- predict(ridge_fit, new_data = train_data)$.pred
+
+calculate_rmse <- function(actual, predicted) {
+  rmse <- sqrt(mean((actual - predicted) ^ 2))
+  rmse
+}
+
+ridge_coef <- coefficients(ridge_fit$fit)
+
+model6 <-
+  sprintf(
+    "%.2f X + %.2f X2 + %.2f X3 + %.2f X4 + %.2f X5 + %.2f",
+    ridge_coef[2],
+    ridge_coef[3],
+    ridge_coef[4],
+    ridge_coef[5],
+    ridge_coef[6],
+    ridge_coef[1]
+  )
+
+values6 <- tibble(
+  Model = model6,
+  Train_error = calculate_rmse(y_train, y_pred_train_ridge),
+  Test_error = calculate_rmse(y_test, y_pred_test_ridge),
+  Sum_of_Absolute_Weights = sum(abs(ridge_coef))
+)
+
+final_results <- bind_rows(results, values6)
+
+final_results
+```
+
+## **Lasso Regression**
+
+```{r lasso_reggression, message=FALSE}
+lasso_spec <- linear_reg(penalty = 0.02, mixture = 1) %>%
+  set_engine("glmnet")
+
+train_data <-
+  tibble(
+    y = y_train,
+    X1 = X_train5[, 1],
+    X2 = X_train5[, 2],
+    X3 = X_train5[, 3],
+    X4 = X_train5[, 4],
+    X5 = X_train5[, 5]
+  )
+
+lasso_fit <- lasso_spec %>%
+  fit(y ~ ., data = train_data)
+
+lasso_coefs <- lasso_fit$fit$beta[, 1]
+
+y_pred_train_lasso <-
+  predict(lasso_fit, new_data = train_data)$.pred
+y_pred_test_lasso <-
+  predict(
+    lasso_fit,
+    new_data = tibble(
+      X1 = X_test5[, 1],
+      X2 = X_test5[, 2],
+      X3 = X_test5[, 3],
+      X4 = X_test5[, 4],
+      X5 = X_test5[, 5]
+    )
+  )$.pred
+
+model7 <-
+  sprintf(
+    "%.2f X + %.2f X2 + %.2f X3 + %.2f X4 + %.2f X5 + %.2f",
+    lasso_coefs[2],
+    lasso_coefs[3],
+    lasso_coefs[4],
+    lasso_coefs[5],
+    lasso_coefs[6],
+    lasso_fit$fit$a0[1]
+  )
+
+values7 <- c(model7,
+             sqrt(mean((
+               y_train - y_pred_train_lasso
+             ) ^ 2)),
+             sqrt(mean((
+               y_test - y_pred_test_lasso
+             ) ^ 2)),
+             sum(abs(lasso_coefs[-1])) + abs(lasso_fit$fit$a0[1]))
+
+lasso_results <- tibble(
+  Model = "Lasso",
+  `Train error` = values7[2],
+  `Test error` = values7[3],
+  `Sum of Absolute Weights` = values7[4]
+)
+
+lasso_results
+```
