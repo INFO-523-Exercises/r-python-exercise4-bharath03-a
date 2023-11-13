@@ -87,6 +87,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#synthetic-data-generation" id="toc-synthetic-data-generation" class="nav-link" data-scroll-target="#synthetic-data-generation">Synthetic Data Generation</a></li>
   <li><a href="#multiple-linear-regression" id="toc-multiple-linear-regression" class="nav-link" data-scroll-target="#multiple-linear-regression">Multiple Linear Regression</a></li>
   <li><a href="#effect-of-correlated-attributes" id="toc-effect-of-correlated-attributes" class="nav-link" data-scroll-target="#effect-of-correlated-attributes">Effect of Correlated Attributes</a></li>
+  <li><a href="#ridge-regression" id="toc-ridge-regression" class="nav-link" data-scroll-target="#ridge-regression">Ridge Regression</a></li>
+  <li><a href="#lasso-regression" id="toc-lasso-regression" class="nav-link" data-scroll-target="#lasso-regression">Lasso Regression</a></li>
+  <li><a href="#hyper-parameter-selection-via-cross-validation" id="toc-hyper-parameter-selection-via-cross-validation" class="nav-link" data-scroll-target="#hyper-parameter-selection-via-cross-validation">Hyper-parameter Selection via Cross-Validation</a>
+  <ul class="collapse">
+  <li><a href="#fitting-a-ridge-regression-model-by-selecting-the-best-hyper-parameter-value" id="toc-fitting-a-ridge-regression-model-by-selecting-the-best-hyper-parameter-value" class="nav-link" data-scroll-target="#fitting-a-ridge-regression-model-by-selecting-the-best-hyper-parameter-value">Fitting a ridge regression model by selecting the best hyper-parameter value</a></li>
+  <li><a href="#fitting-a-lasso-regression-model-by-selecting-the-best-hyper-parameter-value" id="toc-fitting-a-lasso-regression-model-by-selecting-the-best-hyper-parameter-value" class="nav-link" data-scroll-target="#fitting-a-lasso-regression-model-by-selecting-the-best-hyper-parameter-value">Fitting a lasso regression model by selecting the best hyper-parameter value</a></li>
+  </ul></li>
   </ul>
 </nav>
 </div>
@@ -371,20 +378,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> y_train</span>
 <span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>regr2_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
-<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>regr2_fit <span class="ot">&lt;-</span> regr2_spec <span class="sc">%&gt;%</span> <span class="fu">fit</span>(y <span class="sc">~</span> X1 <span class="sc">+</span> X2, <span class="at">data =</span> train_data2)</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>regr2_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>regr2_fit <span class="ot">&lt;-</span> regr2_spec <span class="sc">|&gt;</span> <span class="fu">fit</span>(y <span class="sc">~</span> X1 <span class="sc">+</span> X2, <span class="at">data =</span> train_data2)</span>
 <span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>regr3_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>regr3_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
 <span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>regr3_fit <span class="ot">&lt;-</span></span>
-<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>  regr3_spec <span class="sc">%&gt;%</span> <span class="fu">fit</span>(y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3, <span class="at">data =</span> train_data3)</span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>  regr3_spec <span class="sc">|&gt;</span> <span class="fu">fit</span>(y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3, <span class="at">data =</span> train_data3)</span>
 <span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>regr4_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>regr4_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
 <span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>regr4_fit <span class="ot">&lt;-</span></span>
-<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>  regr4_spec <span class="sc">%&gt;%</span> <span class="fu">fit</span>(y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3 <span class="sc">+</span> X4, <span class="at">data =</span> train_data4)</span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>  regr4_spec <span class="sc">|&gt;</span> <span class="fu">fit</span>(y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3 <span class="sc">+</span> X4, <span class="at">data =</span> train_data4)</span>
 <span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>regr5_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>regr5_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
 <span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a>regr5_fit <span class="ot">&lt;-</span></span>
-<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>  regr5_spec <span class="sc">%&gt;%</span> <span class="fu">fit</span>(y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3 <span class="sc">+</span> X4 <span class="sc">+</span> X5, <span class="at">data =</span> train_data5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>  regr5_spec <span class="sc">|&gt;</span> <span class="fu">fit</span>(y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3 <span class="sc">+</span> X4 <span class="sc">+</span> X5, <span class="at">data =</span> train_data5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>All 4 versions of the regression models are then applied to the training and test sets.</p>
 <div class="cell">
@@ -419,6 +426,389 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>y_pred_test5 <span class="ot">&lt;-</span> <span class="fu">predict</span>(regr5_fit, <span class="at">new_data =</span> new_test_data5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>For post-processing, we compute both the training and test errors of the models. We can also show the resulting model and the sum of the absolute weights of the regression coefficients, i.e., <span class="math inline">\(\sum_{j=0}^d |w_j|\)</span>, where <span class="math inline">\(d\)</span> is the number of predictor attributes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>get_coef <span class="ot">&lt;-</span> <span class="cf">function</span>(model) {</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  coef <span class="ot">&lt;-</span> <span class="fu">coefficients</span>(model<span class="sc">$</span>fit)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  coef</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>calculate_rmse <span class="ot">&lt;-</span> <span class="cf">function</span>(actual, predicted) {</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  rmse <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((actual <span class="sc">-</span> predicted) <span class="sc">^</span> <span class="dv">2</span>))</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  rmse</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model =</span> <span class="fu">c</span>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sprintf</span>(<span class="st">"%.2f X + %.2f"</span>, <span class="fu">get_coef</span>(regr2_fit)[<span class="st">'X1'</span>], <span class="fu">get_coef</span>(regr2_fit)[<span class="st">'(Intercept)'</span>]),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sprintf</span>(</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">"%.2f X + %.2f X2 + %.2f"</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_coef</span>(regr3_fit)[<span class="st">'X1'</span>],</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_coef</span>(regr3_fit)[<span class="st">'X2'</span>],</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_coef</span>(regr3_fit)[<span class="st">'(Intercept)'</span>]</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sprintf</span>(</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">"%.2f X + %.2f X2 + %.2f X3 + %.2f"</span>,</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_coef</span>(regr4_fit)[<span class="st">'X1'</span>],</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_coef</span>(regr4_fit)[<span class="st">'X2'</span>],</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_coef</span>(regr4_fit)[<span class="st">'X3'</span>],</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_coef</span>(regr4_fit)[<span class="st">'(Intercept)'</span>]</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sprintf</span>(</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>      <span class="st">"%.2f X + %.2f X2 + %.2f X3 + %.2f X4 + %.2f"</span>,</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_coef</span>(regr5_fit)[<span class="st">'X1'</span>],</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_coef</span>(regr5_fit)[<span class="st">'X2'</span>],</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_coef</span>(regr5_fit)[<span class="st">'X3'</span>],</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_coef</span>(regr5_fit)[<span class="st">'X4'</span>],</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_coef</span>(regr5_fit)[<span class="st">'(Intercept)'</span>]</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">Train_error =</span> <span class="fu">c</span>(</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">calculate_rmse</span>(y_train, y_pred_train2<span class="sc">$</span>.pred),</span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">calculate_rmse</span>(y_train, y_pred_train3<span class="sc">$</span>.pred),</span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">calculate_rmse</span>(y_train, y_pred_train4<span class="sc">$</span>.pred),</span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">calculate_rmse</span>(y_train, y_pred_train5<span class="sc">$</span>.pred)</span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">Test_error =</span> <span class="fu">c</span>(</span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">calculate_rmse</span>(y_test, y_pred_test2<span class="sc">$</span>.pred),</span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">calculate_rmse</span>(y_test, y_pred_test3<span class="sc">$</span>.pred),</span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">calculate_rmse</span>(y_test, y_pred_test4<span class="sc">$</span>.pred),</span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">calculate_rmse</span>(y_test, y_pred_test5<span class="sc">$</span>.pred)</span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">Sum_of_Absolute_Weights =</span> <span class="fu">c</span>(<span class="fu">sum</span>(<span class="fu">abs</span>(</span>
+<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a>    <span class="fu">get_coef</span>(regr2_fit)</span>
+<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a>  )),</span>
+<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(<span class="fu">abs</span>(</span>
+<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a>    <span class="fu">get_coef</span>(regr3_fit)</span>
+<span id="cb21-46"><a href="#cb21-46" aria-hidden="true" tabindex="-1"></a>  )),</span>
+<span id="cb21-47"><a href="#cb21-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(<span class="fu">abs</span>(</span>
+<span id="cb21-48"><a href="#cb21-48" aria-hidden="true" tabindex="-1"></a>    <span class="fu">get_coef</span>(regr4_fit)</span>
+<span id="cb21-49"><a href="#cb21-49" aria-hidden="true" tabindex="-1"></a>  )),</span>
+<span id="cb21-50"><a href="#cb21-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(<span class="fu">abs</span>(</span>
+<span id="cb21-51"><a href="#cb21-51" aria-hidden="true" tabindex="-1"></a>    <span class="fu">get_coef</span>(regr5_fit)</span>
+<span id="cb21-52"><a href="#cb21-52" aria-hidden="true" tabindex="-1"></a>  )))</span>
+<span id="cb21-53"><a href="#cb21-53" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(results, <span class="fu">aes</span>(<span class="at">x =</span> Sum_of_Absolute_Weights)) <span class="sc">+</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> Train_error, <span class="at">color =</span> <span class="st">"Train error"</span>), <span class="at">linetype =</span> <span class="st">"solid"</span>) <span class="sc">+</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> Test_error, <span class="at">color =</span> <span class="st">"Test error"</span>), <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Sum of Absolute Weights"</span>, <span class="at">y =</span> <span class="st">"Error rate"</span>) <span class="sc">+</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="r-exercise-4_files/figure-html/plot_results_regr-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 4
+  Model                            Train_error Test_error Sum_of_Absolute_Weig…¹
+  &lt;chr&gt;                                  &lt;dbl&gt;      &lt;dbl&gt;                  &lt;dbl&gt;
+1 -0.53 X + -1.05                         1.33       1.30                   3.64
+2 0.34 X + 20.99 X2 + -1.05               1.26       1.35                  62.8 
+3 0.07 X + 22.72 X2 + -66.35 X3 +…        1.18       1.49                 137.  
+4 -1.83 X + 22.46 X2 + -63.04 X3 …        1.17       1.53                 178.  
+# ℹ abbreviated name: ¹​Sum_of_Absolute_Weights</code></pre>
+</div>
+</div>
+</section>
+<section id="ridge-regression" class="level2">
+<h2 class="anchored" data-anchor-id="ridge-regression">Ridge Regression</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>train_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">y =</span> y_train, X_train5)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>test_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">y =</span> y_test, X_test5)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>ridge_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>(<span class="at">penalty =</span> <span class="fl">0.4</span>, <span class="at">mixture =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"glmnet"</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>ridge_fit <span class="ot">&lt;-</span> ridge_spec <span class="sc">|&gt;</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(y <span class="sc">~</span> ., <span class="at">data =</span> train_data)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>y_pred_train_ridge <span class="ot">&lt;-</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(ridge_fit, <span class="at">new_data =</span> train_data)<span class="sc">$</span>.pred</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>y_pred_test_ridge <span class="ot">&lt;-</span> <span class="fu">predict</span>(ridge_fit, <span class="at">new_data =</span> test_data)<span class="sc">$</span>.pred</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>y_pred_train_ridge <span class="ot">&lt;-</span></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(ridge_fit, <span class="at">new_data =</span> train_data)<span class="sc">$</span>.pred</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>y_pred_test_ridge <span class="ot">&lt;-</span> <span class="fu">predict</span>(ridge_fit, <span class="at">new_data =</span> train_data)<span class="sc">$</span>.pred</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>calculate_rmse <span class="ot">&lt;-</span> <span class="cf">function</span>(actual, predicted) {</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>  rmse <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((actual <span class="sc">-</span> predicted) <span class="sc">^</span> <span class="dv">2</span>))</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>  rmse</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>ridge_coef <span class="ot">&lt;-</span> <span class="fu">coefficients</span>(ridge_fit<span class="sc">$</span>fit)</span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>model6 <span class="ot">&lt;-</span></span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sprintf</span>(</span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"%.2f X + %.2f X2 + %.2f X3 + %.2f X4 + %.2f X5 + %.2f"</span>,</span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>    ridge_coef[<span class="dv">2</span>],</span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>    ridge_coef[<span class="dv">3</span>],</span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>    ridge_coef[<span class="dv">4</span>],</span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>    ridge_coef[<span class="dv">5</span>],</span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>    ridge_coef[<span class="dv">6</span>],</span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>    ridge_coef[<span class="dv">1</span>]</span>
+<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>values6 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model =</span> model6,</span>
+<span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">Train_error =</span> <span class="fu">calculate_rmse</span>(y_train, y_pred_train_ridge),</span>
+<span id="cb25-39"><a href="#cb25-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">Test_error =</span> <span class="fu">calculate_rmse</span>(y_test, y_pred_test_ridge),</span>
+<span id="cb25-40"><a href="#cb25-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">Sum_of_Absolute_Weights =</span> <span class="fu">sum</span>(<span class="fu">abs</span>(ridge_coef))</span>
+<span id="cb25-41"><a href="#cb25-41" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-42"><a href="#cb25-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-43"><a href="#cb25-43" aria-hidden="true" tabindex="-1"></a>final_results <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(results, values6)</span>
+<span id="cb25-44"><a href="#cb25-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-45"><a href="#cb25-45" aria-hidden="true" tabindex="-1"></a>final_results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 4
+  Model                            Train_error Test_error Sum_of_Absolute_Weig…¹
+  &lt;chr&gt;                                  &lt;dbl&gt;      &lt;dbl&gt;                  &lt;dbl&gt;
+1 -0.53 X + -1.05                         1.33       1.30                   3.64
+2 0.34 X + 20.99 X2 + -1.05               1.26       1.35                  62.8 
+3 0.07 X + 22.72 X2 + -66.35 X3 +…        1.18       1.49                 137.  
+4 -1.83 X + 22.46 X2 + -63.04 X3 …        1.17       1.53                 178.  
+5 0.00 X + 0.00 X2 + 0.00 X3 + 0.…        1.35       1.29                8581.  
+# ℹ abbreviated name: ¹​Sum_of_Absolute_Weights</code></pre>
+</div>
+</div>
+</section>
+<section id="lasso-regression" class="level2">
+<h2 class="anchored" data-anchor-id="lasso-regression">Lasso Regression</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>lasso_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>(<span class="at">penalty =</span> <span class="fl">0.02</span>, <span class="at">mixture =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"glmnet"</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>train_data <span class="ot">&lt;-</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> y_train,</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">X1 =</span> X_train5[, <span class="dv">1</span>],</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">X2 =</span> X_train5[, <span class="dv">2</span>],</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">X3 =</span> X_train5[, <span class="dv">3</span>],</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">X4 =</span> X_train5[, <span class="dv">4</span>],</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">X5 =</span> X_train5[, <span class="dv">5</span>]</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>lasso_fit <span class="ot">&lt;-</span> lasso_spec <span class="sc">|&gt;</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(y <span class="sc">~</span> ., <span class="at">data =</span> train_data)</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>lasso_coefs <span class="ot">&lt;-</span> lasso_fit<span class="sc">$</span>fit<span class="sc">$</span>beta[, <span class="dv">1</span>]</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>lasso_coefs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>X1 X2 X3 X4 X5 
+ 0  0  0  0  0 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>y_pred_train_lasso <span class="ot">&lt;-</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(lasso_fit, <span class="at">new_data =</span> train_data)<span class="sc">$</span>.pred</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>y_pred_test_lasso <span class="ot">&lt;-</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    lasso_fit,</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_data =</span> <span class="fu">tibble</span>(</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">X1 =</span> X_test5[, <span class="dv">1</span>],</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">X2 =</span> X_test5[, <span class="dv">2</span>],</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">X3 =</span> X_test5[, <span class="dv">3</span>],</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">X4 =</span> X_test5[, <span class="dv">4</span>],</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">X5 =</span> X_test5[, <span class="dv">5</span>]</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">$</span>.pred</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>model7 <span class="ot">&lt;-</span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sprintf</span>(</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"%.2f X + %.2f X2 + %.2f X3 + %.2f X4 + %.2f X5 + %.2f"</span>,</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>    lasso_coefs[<span class="dv">2</span>],</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>    lasso_coefs[<span class="dv">3</span>],</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>    lasso_coefs[<span class="dv">4</span>],</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>    lasso_coefs[<span class="dv">5</span>],</span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>    lasso_coefs[<span class="dv">6</span>],</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>    lasso_fit<span class="sc">$</span>fit<span class="sc">$</span>a0[<span class="dv">1</span>]</span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>values7 <span class="ot">&lt;-</span> <span class="fu">c</span>(model7,</span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sqrt</span>(<span class="fu">mean</span>((</span>
+<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a>               y_train <span class="sc">-</span> y_pred_train_lasso</span>
+<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a>             ) <span class="sc">^</span> <span class="dv">2</span>)),</span>
+<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sqrt</span>(<span class="fu">mean</span>((</span>
+<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a>               y_test <span class="sc">-</span> y_pred_test_lasso</span>
+<span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a>             ) <span class="sc">^</span> <span class="dv">2</span>)),</span>
+<span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sum</span>(<span class="fu">abs</span>(lasso_coefs[<span class="sc">-</span><span class="dv">1</span>])) <span class="sc">+</span> <span class="fu">abs</span>(lasso_fit<span class="sc">$</span>fit<span class="sc">$</span>a0[<span class="dv">1</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>lasso_results <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model =</span> <span class="st">"Lasso"</span>,</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Train error</span><span class="st">`</span> <span class="ot">=</span> values7[<span class="dv">2</span>],</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Test error</span><span class="st">`</span> <span class="ot">=</span> values7[<span class="dv">3</span>],</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Sum of Absolute Weights</span><span class="st">`</span> <span class="ot">=</span> values7[<span class="dv">4</span>]</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>lasso_results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 4
+  Model `Train error`    `Test error`     `Sum of Absolute Weights`
+  &lt;chr&gt; &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;                    
+1 Lasso 1.22083472815552 1.36447668533408 0.750560758224512        </code></pre>
+</div>
+</div>
+</section>
+<section id="hyper-parameter-selection-via-cross-validation" class="level2">
+<h2 class="anchored" data-anchor-id="hyper-parameter-selection-via-cross-validation">Hyper-parameter Selection via Cross-Validation</h2>
+<section id="fitting-a-ridge-regression-model-by-selecting-the-best-hyper-parameter-value" class="level3">
+<h3 class="anchored" data-anchor-id="fitting-a-ridge-regression-model-by-selecting-the-best-hyper-parameter-value">Fitting a ridge regression model by selecting the best hyper-parameter value</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>y_train <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(y_train)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>train_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">y =</span> y_train, <span class="at">X1 =</span> X_train5[,<span class="dv">1</span>], <span class="at">X2 =</span> X_train5[,<span class="dv">2</span>], </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">X3 =</span> X_train5[,<span class="dv">3</span>], <span class="at">X4 =</span> X_train5[,<span class="dv">4</span>], <span class="at">X5 =</span> X_train5[,<span class="dv">5</span>])</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>recipe_obj <span class="ot">&lt;-</span> <span class="fu">recipe</span>(y <span class="sc">~</span> ., <span class="at">data =</span> train_data) <span class="sc">|&gt;</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_predictors</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>ridge_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>(<span class="at">penalty =</span> <span class="fu">tune</span>(), <span class="at">mixture =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"glmnet"</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>ridge_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(ridge_spec) <span class="sc">|&gt;</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(recipe_obj)</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="co"># alphas for ridge regression</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>alphas <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">penalty =</span> <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.6</span>, <span class="fl">0.8</span>, <span class="fl">1.0</span>))</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a><span class="co"># tuning the results for ridge regression</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>tune_results <span class="ot">&lt;-</span> </span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>  ridge_wf <span class="sc">|&gt;</span></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tune_grid</span>(</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">resamples =</span> <span class="fu">bootstraps</span>(train_data, <span class="at">times =</span> <span class="dv">5</span>),</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">grid =</span> alphas</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>best_params <span class="ot">&lt;-</span> tune_results <span class="sc">|&gt;</span> <span class="fu">select_best</span>(<span class="st">"rmse"</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>ridge_fit <span class="ot">&lt;-</span> ridge_spec <span class="sc">|&gt;</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_model</span>(best_params) <span class="sc">|&gt;</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(y <span class="sc">~</span> ., <span class="at">data =</span> train_data)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>ridge_coefs <span class="ot">&lt;-</span> ridge_fit<span class="sc">$</span>fit<span class="sc">$</span>beta[,<span class="dv">1</span>]</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>y_pred_train_ridge <span class="ot">&lt;-</span> <span class="fu">predict</span>(ridge_fit, <span class="at">new_data =</span> train_data)<span class="sc">$</span>.pred</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>y_pred_test_ridge <span class="ot">&lt;-</span> <span class="fu">predict</span>(ridge_fit, <span class="at">new_data =</span> <span class="fu">tibble</span>(<span class="at">X1 =</span> X_test5[,<span class="dv">1</span>], <span class="at">X2 =</span> X_test5[,<span class="dv">2</span>], </span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>                                                          <span class="at">X3 =</span> X_test5[,<span class="dv">3</span>], <span class="at">X4 =</span> X_test5[,<span class="dv">4</span>], <span class="at">X5 =</span> X_test5[,<span class="dv">5</span>]))<span class="sc">$</span>.pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>model6 <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"%.2f X + %.2f X2 + %.2f X3 + %.2f X4 + %.2f X5 + %.2f"</span>, </span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>                  ridge_coefs[<span class="dv">2</span>], ridge_coefs[<span class="dv">3</span>], ridge_coefs[<span class="dv">4</span>], </span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>                  ridge_coefs[<span class="dv">5</span>], ridge_coefs[<span class="dv">6</span>], ridge_fit<span class="sc">$</span>fit<span class="sc">$</span>a0[<span class="dv">1</span>])</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>values6 <span class="ot">&lt;-</span> <span class="fu">c</span>(model6, </span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sqrt</span>(<span class="fu">mean</span>((y_train <span class="sc">-</span> y_pred_train_ridge)<span class="sc">^</span><span class="dv">2</span>)),</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sqrt</span>(<span class="fu">mean</span>((y_test <span class="sc">-</span> y_pred_test_ridge)<span class="sc">^</span><span class="dv">2</span>)),</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sum</span>(<span class="fu">abs</span>(ridge_coefs[<span class="sc">-</span><span class="dv">1</span>])) <span class="sc">+</span> <span class="fu">abs</span>(ridge_fit<span class="sc">$</span>fit<span class="sc">$</span>a0[<span class="dv">1</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>ridge_results <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">"RidgeCV"</span>,</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>                        <span class="st">`</span><span class="at">Train error</span><span class="st">`</span> <span class="ot">=</span> values6[<span class="dv">2</span>], </span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                        <span class="st">`</span><span class="at">Test error</span><span class="st">`</span> <span class="ot">=</span> values6[<span class="dv">3</span>], </span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>                        <span class="st">`</span><span class="at">Sum of Absolute Weights</span><span class="st">`</span> <span class="ot">=</span> values6[<span class="dv">4</span>])</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Selected alpha ="</span>, best_params<span class="sc">$</span>penalty, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Selected alpha = 1 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>all_results <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(results, ridge_results)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>all_results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 7
+  Model Train_error Test_error Sum_of_Absolute_Weig…¹ `Train error` `Test error`
+  &lt;chr&gt;       &lt;dbl&gt;      &lt;dbl&gt;                  &lt;dbl&gt; &lt;chr&gt;         &lt;chr&gt;       
+1 -0.5…        1.33       1.30                   3.64 &lt;NA&gt;          &lt;NA&gt;        
+2 0.34…        1.26       1.35                  62.8  &lt;NA&gt;          &lt;NA&gt;        
+3 0.07…        1.18       1.49                 137.   &lt;NA&gt;          &lt;NA&gt;        
+4 -1.8…        1.17       1.53                 178.   &lt;NA&gt;          &lt;NA&gt;        
+5 Ridg…       NA         NA                     NA    1.3309131350… 1.295979736…
+# ℹ abbreviated name: ¹​Sum_of_Absolute_Weights
+# ℹ 1 more variable: `Sum of Absolute Weights` &lt;chr&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="fitting-a-lasso-regression-model-by-selecting-the-best-hyper-parameter-value" class="level3">
+<h3 class="anchored" data-anchor-id="fitting-a-lasso-regression-model-by-selecting-the-best-hyper-parameter-value">Fitting a lasso regression model by selecting the best hyper-parameter value</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>y_train <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(y_train)</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>train_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">y =</span> y_train, <span class="at">X1 =</span> X_train5[,<span class="dv">1</span>], <span class="at">X2 =</span> X_train5[,<span class="dv">2</span>], </span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">X3 =</span> X_train5[,<span class="dv">3</span>], <span class="at">X4 =</span> X_train5[,<span class="dv">4</span>], <span class="at">X5 =</span> X_train5[,<span class="dv">5</span>])</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>recipe_obj_lasso <span class="ot">&lt;-</span> <span class="fu">recipe</span>(y <span class="sc">~</span> ., <span class="at">data =</span> train_data) <span class="sc">|&gt;</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_predictors</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>lasso_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>(<span class="at">penalty =</span> <span class="fu">tune</span>(), <span class="at">mixture =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"glmnet"</span>)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>lasso_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(recipe_obj_lasso)</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>lasso_fit <span class="ot">&lt;-</span> lasso_wf <span class="sc">|&gt;</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(lasso_spec) <span class="sc">|&gt;</span></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> train_data)</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>lambda_grid <span class="ot">&lt;-</span> <span class="fu">grid_regular</span>(<span class="fu">penalty</span>(), <span class="at">levels =</span> <span class="dv">50</span>)</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>tune_results_lasso <span class="ot">&lt;-</span> </span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tune_grid</span>(lasso_wf <span class="sc">|&gt;</span> <span class="fu">add_model</span>(lasso_spec),</span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">resamples =</span> <span class="fu">bootstraps</span>(train_data, <span class="at">times =</span> <span class="dv">5</span>),</span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">grid =</span> lambda_grid</span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>best_params_lasso <span class="ot">&lt;-</span> tune_results_lasso <span class="sc">|&gt;</span> <span class="fu">select_best</span>(<span class="st">"rmse"</span>)</span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>lasso_fit <span class="ot">&lt;-</span> lasso_spec <span class="sc">|&gt;</span></span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_model</span>(best_params_lasso) <span class="sc">|&gt;</span></span>
+<span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(y <span class="sc">~</span> ., <span class="at">data =</span> train_data)</span>
+<span id="cb41-24"><a href="#cb41-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-25"><a href="#cb41-25" aria-hidden="true" tabindex="-1"></a>lasso_coefs <span class="ot">&lt;-</span> lasso_fit<span class="sc">$</span>fit<span class="sc">$</span>beta[,<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>y_pred_train_lasso <span class="ot">&lt;-</span> <span class="fu">predict</span>(lasso_fit, <span class="at">new_data =</span> train_data)<span class="sc">$</span>.pred</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>y_pred_test_lasso <span class="ot">&lt;-</span> <span class="fu">predict</span>(lasso_fit, <span class="at">new_data =</span> <span class="fu">tibble</span>(<span class="at">X1 =</span> X_test5[,<span class="dv">1</span>], <span class="at">X2 =</span> X_test5[,<span class="dv">2</span>], </span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>                                                          <span class="at">X3 =</span> X_test5[,<span class="dv">3</span>], <span class="at">X4 =</span> X_test5[,<span class="dv">4</span>], <span class="at">X5 =</span> X_test5[,<span class="dv">5</span>]))<span class="sc">$</span>.pred</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>model7 <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"%.2f X + %.2f X2 + %.2f X3 + %.2f X4 + %.2f X5 + %.2f"</span>, </span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>                  lasso_coefs[<span class="dv">2</span>], lasso_coefs[<span class="dv">3</span>], lasso_coefs[<span class="dv">4</span>], </span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>                  lasso_coefs[<span class="dv">5</span>], lasso_coefs[<span class="dv">6</span>], lasso_fit<span class="sc">$</span>fit<span class="sc">$</span>a0[<span class="dv">1</span>])</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>values7 <span class="ot">&lt;-</span> <span class="fu">c</span>(model7, </span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sqrt</span>(<span class="fu">mean</span>((y_train <span class="sc">-</span> y_pred_train_lasso)<span class="sc">^</span><span class="dv">2</span>)),</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sqrt</span>(<span class="fu">mean</span>((y_test <span class="sc">-</span> y_pred_test_lasso)<span class="sc">^</span><span class="dv">2</span>)),</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sum</span>(<span class="fu">abs</span>(lasso_coefs[<span class="sc">-</span><span class="dv">1</span>])) <span class="sc">+</span> <span class="fu">abs</span>(lasso_fit<span class="sc">$</span>fit<span class="sc">$</span>a0[<span class="dv">1</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>lasso_results <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">Model =</span> <span class="st">"LassoCV"</span>,</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>                        <span class="st">`</span><span class="at">Train error</span><span class="st">`</span> <span class="ot">=</span> values7[<span class="dv">2</span>], </span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>                        <span class="st">`</span><span class="at">Test error</span><span class="st">`</span> <span class="ot">=</span> values7[<span class="dv">3</span>], </span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>                        <span class="st">`</span><span class="at">Sum of Absolute Weights</span><span class="st">`</span> <span class="ot">=</span> values7[<span class="dv">4</span>])</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Selected alpha for Lasso ="</span>, best_params_lasso<span class="sc">$</span>penalty, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Selected alpha for Lasso = 0.6250552 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>lasso_results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 4
+  Model   `Train error`    `Test error`     `Sum of Absolute Weights`
+  &lt;chr&gt;   &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;                    
+1 LassoCV 1.34525910987747 1.28985807470116 0.750560758224512        </code></pre>
+</div>
+</div>
+</section>
 </section>
 
 </main>

@@ -250,20 +250,20 @@ train_data5 <-
     y = y_train
   )
 
-regr2_spec <- linear_reg() %>% set_engine("lm")
-regr2_fit <- regr2_spec %>% fit(y ~ X1 + X2, data = train_data2)
+regr2_spec <- linear_reg() |> set_engine("lm")
+regr2_fit <- regr2_spec |> fit(y ~ X1 + X2, data = train_data2)
 
-regr3_spec <- linear_reg() %>% set_engine("lm")
+regr3_spec <- linear_reg() |> set_engine("lm")
 regr3_fit <-
-  regr3_spec %>% fit(y ~ X1 + X2 + X3, data = train_data3)
+  regr3_spec |> fit(y ~ X1 + X2 + X3, data = train_data3)
 
-regr4_spec <- linear_reg() %>% set_engine("lm")
+regr4_spec <- linear_reg() |> set_engine("lm")
 regr4_fit <-
-  regr4_spec %>% fit(y ~ X1 + X2 + X3 + X4, data = train_data4)
+  regr4_spec |> fit(y ~ X1 + X2 + X3 + X4, data = train_data4)
 
-regr5_spec <- linear_reg() %>% set_engine("lm")
+regr5_spec <- linear_reg() |> set_engine("lm")
 regr5_fit <-
-  regr5_spec %>% fit(y ~ X1 + X2 + X3 + X4 + X5, data = train_data5)
+  regr5_spec |> fit(y ~ X1 + X2 + X3 + X4 + X5, data = train_data5)
 ```
 
 All 4 versions of the regression models are then applied to the training and test sets.
@@ -380,16 +380,16 @@ ggplot(results, aes(x = Sum_of_Absolute_Weights)) +
 results
 ```
 
-## **Ridge Regression**
+## Ridge Regression
 
 ```{r ridge_regression, message=FALSE}
 train_data <- tibble(y = y_train, X_train5)
 test_data <- tibble(y = y_test, X_test5)
 
-ridge_spec <- linear_reg(penalty = 0.4, mixture = 1) %>%
+ridge_spec <- linear_reg(penalty = 0.4, mixture = 1) |>
   set_engine("glmnet")
 
-ridge_fit <- ridge_spec %>%
+ridge_fit <- ridge_spec |>
   fit(y ~ ., data = train_data)
 
 y_pred_train_ridge <-
@@ -430,10 +430,10 @@ final_results <- bind_rows(results, values6)
 final_results
 ```
 
-## **Lasso Regression**
+## Lasso Regression
 
-```{r lasso_reggression, message=FALSE}
-lasso_spec <- linear_reg(penalty = 0.02, mixture = 1) %>%
+```{r lasso_reggression_training, message=FALSE}
+lasso_spec <- linear_reg(penalty = 0.02, mixture = 1) |>
   set_engine("glmnet")
 
 train_data <-
@@ -446,11 +446,14 @@ train_data <-
     X5 = X_train5[, 5]
   )
 
-lasso_fit <- lasso_spec %>%
+lasso_fit <- lasso_spec |>
   fit(y ~ ., data = train_data)
 
 lasso_coefs <- lasso_fit$fit$beta[, 1]
+lasso_coefs
+```
 
+```{r lasso_reg_pred, message=FALSE}
 y_pred_train_lasso <-
   predict(lasso_fit, new_data = train_data)$.pred
 y_pred_test_lasso <-
@@ -484,13 +487,156 @@ values7 <- c(model7,
                y_test - y_pred_test_lasso
              ) ^ 2)),
              sum(abs(lasso_coefs[-1])) + abs(lasso_fit$fit$a0[1]))
+```
 
+```{r lasso_results, message=FALSE}
 lasso_results <- tibble(
   Model = "Lasso",
   `Train error` = values7[2],
   `Test error` = values7[3],
   `Sum of Absolute Weights` = values7[4]
 )
+
+lasso_results
+```
+
+## Hyper-parameter Selection via Cross-Validation
+
+### Fitting a ridge regression model by selecting the best hyper-parameter value
+
+```{r hyper_params, message=FALSE}
+y_train <- as.vector(y_train)
+
+train_data <- tibble(y = y_train, X1 = X_train5[,1], X2 = X_train5[,2], 
+                     X3 = X_train5[,3], X4 = X_train5[,4], X5 = X_train5[,5])
+
+recipe_obj <- recipe(y ~ ., data = train_data) |>
+  step_normalize(all_predictors()) |>
+  prep()
+```
+
+```{r ridge_workflow, message=FALSE}
+ridge_spec <- linear_reg(penalty = tune(), mixture = 0) |> 
+  set_engine("glmnet")
+
+ridge_wf <- workflow() |>
+  add_model(ridge_spec) |>
+  add_recipe(recipe_obj)
+
+# alphas for ridge regression
+alphas <- tibble(penalty = c(0.2, 0.4, 0.6, 0.8, 1.0))
+
+# tuning the results for ridge regression
+tune_results <- 
+  ridge_wf |>
+  tune_grid(
+  resamples = bootstraps(train_data, times = 5),
+  grid = alphas
+)
+```
+
+```{r best_params_fit, message=FALSE}
+best_params <- tune_results |> select_best("rmse")
+
+ridge_fit <- ridge_spec |>
+  finalize_model(best_params) |>
+  fit(y ~ ., data = train_data)
+
+ridge_coefs <- ridge_fit$fit$beta[,1]
+
+y_pred_train_ridge <- predict(ridge_fit, new_data = train_data)$.pred
+y_pred_test_ridge <- predict(ridge_fit, new_data = tibble(X1 = X_test5[,1], X2 = X_test5[,2], 
+                                                          X3 = X_test5[,3], X4 = X_test5[,4], X5 = X_test5[,5]))$.pred
+```
+
+```{r creating_model_str, message=FALSE}
+model6 <- sprintf("%.2f X + %.2f X2 + %.2f X3 + %.2f X4 + %.2f X5 + %.2f", 
+                  ridge_coefs[2], ridge_coefs[3], ridge_coefs[4], 
+                  ridge_coefs[5], ridge_coefs[6], ridge_fit$fit$a0[1])
+
+values6 <- c(model6, 
+             sqrt(mean((y_train - y_pred_train_ridge)^2)),
+             sqrt(mean((y_test - y_pred_test_ridge)^2)),
+             sum(abs(ridge_coefs[-1])) + abs(ridge_fit$fit$a0[1]))
+```
+
+```{r ridge_results, message=FALSE}
+ridge_results <- tibble(Model = "RidgeCV",
+                        `Train error` = values6[2], 
+                        `Test error` = values6[3], 
+                        `Sum of Absolute Weights` = values6[4])
+
+cat("Selected alpha =", best_params$penalty, "\n")
+
+all_results <- bind_rows(results, ridge_results)
+all_results
+```
+
+### Fitting a lasso regression model by selecting the best hyper-parameter value
+
+```{r setting_data, message=FALSE}
+set.seed(1234)
+
+y_train <- as.vector(y_train)
+
+train_data <- tibble(y = y_train, X1 = X_train5[,1], X2 = X_train5[,2], 
+                     X3 = X_train5[,3], X4 = X_train5[,4], X5 = X_train5[,5])
+
+recipe_obj_lasso <- recipe(y ~ ., data = train_data) |>
+  step_normalize(all_predictors()) |>
+  prep()
+```
+
+```{r lasso_specs, message=FALSE}
+lasso_spec <- linear_reg(penalty = tune(), mixture = 1) |> 
+  set_engine("glmnet")
+
+lasso_wf <- workflow() |>
+  add_recipe(recipe_obj_lasso)
+
+lasso_fit <- lasso_wf |>
+  add_model(lasso_spec) |>
+  fit(data = train_data)
+
+lambda_grid <- grid_regular(penalty(), levels = 50)
+
+tune_results_lasso <- 
+  tune_grid(lasso_wf |> add_model(lasso_spec),
+  resamples = bootstraps(train_data, times = 5),
+  grid = lambda_grid
+)
+
+best_params_lasso <- tune_results_lasso |> select_best("rmse")
+
+lasso_fit <- lasso_spec |>
+  finalize_model(best_params_lasso) |>
+  fit(y ~ ., data = train_data)
+
+lasso_coefs <- lasso_fit$fit$beta[,1]
+```
+
+```{r predict_lasso, message=FALSE}
+y_pred_train_lasso <- predict(lasso_fit, new_data = train_data)$.pred
+y_pred_test_lasso <- predict(lasso_fit, new_data = tibble(X1 = X_test5[,1], X2 = X_test5[,2], 
+                                                          X3 = X_test5[,3], X4 = X_test5[,4], X5 = X_test5[,5]))$.pred
+
+model7 <- sprintf("%.2f X + %.2f X2 + %.2f X3 + %.2f X4 + %.2f X5 + %.2f", 
+                  lasso_coefs[2], lasso_coefs[3], lasso_coefs[4], 
+                  lasso_coefs[5], lasso_coefs[6], lasso_fit$fit$a0[1])
+
+values7 <- c(model7, 
+             sqrt(mean((y_train - y_pred_train_lasso)^2)),
+             sqrt(mean((y_test - y_pred_test_lasso)^2)),
+             sum(abs(lasso_coefs[-1])) + abs(lasso_fit$fit$a0[1]))
+```
+
+```{r results_lasso_hp, message=FALSE}
+lasso_results <- tibble(Model = "LassoCV",
+                        `Train error` = values7[2], 
+                        `Test error` = values7[3], 
+                        `Sum of Absolute Weights` = values7[4])
+
+cat("Selected alpha for Lasso =", best_params_lasso$penalty, "\n")
 
 lasso_results
 ```
