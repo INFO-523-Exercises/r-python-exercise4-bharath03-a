@@ -396,10 +396,6 @@ y_pred_train_ridge <-
   predict(ridge_fit, new_data = train_data)$.pred
 y_pred_test_ridge <- predict(ridge_fit, new_data = test_data)$.pred
 
-y_pred_train_ridge <-
-  predict(ridge_fit, new_data = train_data)$.pred
-y_pred_test_ridge <- predict(ridge_fit, new_data = train_data)$.pred
-
 calculate_rmse <- function(actual, predicted) {
   rmse <- sqrt(mean((actual - predicted) ^ 2))
   rmse
@@ -500,7 +496,13 @@ lasso_results <- tibble(
 lasso_results
 ```
 
+Observe that the lasso regression model sets the coefficients for the correlated attributes, X2, X3, X4, and X5 to exactly zero unlike the ridge regression model. As a result, its test error is significantly better than that for ridge regression.
+
 ## Hyper-parameter Selection via Cross-Validation
+
+While both ridge and lasso regression methods can potentially alleviate the model overfitting problem, one of the challenges is how to select the appropriate hyperparameter value. In the examples shown below, we demonstrate examples of using a 5-fold cross-validation method to select the best hyperparameter of the model. More details about the model selection problem and cross-validation method are described in Chapter 3 of the book.
+
+In the first sample code below, we vary the hyperparameter for ridge regression to a range between 0.2 and 1.0. Using the `RidgeCV()` function, we can train a model with 5-fold cross-validation and select the best hyperparameter value.
 
 ### Fitting a ridge regression model by selecting the best hyper-parameter value
 
